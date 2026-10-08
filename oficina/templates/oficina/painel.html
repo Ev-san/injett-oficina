@@ -1,0 +1,26 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Painel da oficina</h1>
+<p>
+  <a class="button" href="{% url 'admin:oficina_ordemservico_add' %}">+ Nova OS</a>
+  <a class="button" href="{% url 'admin:oficina_cliente_add' %}">+ Novo cliente</a>
+  <a class="button" href="{% url 'admin:index' %}">Cadastros</a>
+</p>
+<h2>Ordens em andamento ({{ abertas|length }})</h2>
+<table>
+  <tr><th>OS</th><th>Veículo</th><th>Cliente</th><th>Status</th><th>Total</th><th></th></tr>
+  {% for o in abertas %}
+  <tr>
+    <td><a href="{% url 'admin:oficina_ordemservico_change' o.pk %}">#{{ o.pk }}</a></td>
+    <td>{{ o.veiculo }}</td><td>{{ o.cliente }}</td>
+    <td>{{ o.get_status_display }}</td><td>R$ {{ o.total|floatformat:2 }}</td>
+    <td><a href="{% url 'imprimir_os' o.pk %}" target="_blank">Imprimir</a></td>
+  </tr>
+  {% empty %}<tr><td colspan="6">Nenhuma OS em andamento.</td></tr>{% endfor %}
+</table>
+<h2>Peças com estoque baixo</h2>
+<ul>
+  {% for p in estoque_baixo %}<li>{{ p }} — {{ p.estoque }} un. (mín. {{ p.estoque_minimo }})</li>
+  {% empty %}<li>Nenhuma.</li>{% endfor %}
+</ul>
+{% endblock %}
