@@ -15,6 +15,24 @@ Projeto criado a partir da minha experiência prática como eletricista automoti
 - **Relatório financeiro** por período: faturamento, custo das peças, lucro bruto e ticket médio
 - **Painel inicial** com as OS em andamento e as peças com estoque baixo
 
+## Telas
+
+**Ordens de serviço** (filtros por status e tipo de veículo)
+
+![Ordens de serviço](docs/img/ordens-servico.jpg)
+
+**Cadastro de cliente com veículos**
+
+![Cadastro de cliente](docs/img/cadastro-cliente.jpg)
+
+**Cadastro de veículo** (tipo e tensão 12V/24V)
+
+![Cadastro de veículo](docs/img/cadastro-veiculo.jpg)
+
+**Cadastro de peça** (preço de custo/venda e estoque mínimo)
+
+![Cadastro de peça](docs/img/cadastro-peca.jpg)
+
 ## Tecnologias
 
 - Python 3.13
