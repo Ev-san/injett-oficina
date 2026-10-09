@@ -18,7 +18,7 @@ Projeto criado a partir da minha experiência prática como eletricista automoti
 ## Tecnologias
 
 - Python 3.13
-- Django 5 (ORM, Admin customizado, templates)
+- Django 6 (ORM, Admin customizado, templates)
 - SQLite
 
 ## Como executar
