@@ -1,0 +1,29 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h1>Relatório financeiro</h1>
+<p><a href="{% url 'painel' %}">&larr; Painel</a></p>
+<form method="get">
+  De <input type="date" name="inicio" value="{{ inicio|date:'Y-m-d' }}">
+  até <input type="date" name="fim" value="{{ fim|date:'Y-m-d' }}">
+  <button type="submit">Filtrar</button>
+</form>
+<h2>Resumo ({{ ordens|length }} OS concluídas)</h2>
+<table>
+  <tr><td>Serviços (mão de obra)</td><td>R$ {{ servicos|floatformat:2 }}</td></tr>
+  <tr><td>Peças vendidas</td><td>R$ {{ pecas|floatformat:2 }}</td></tr>
+  <tr><td>Descontos</td><td>- R$ {{ descontos|floatformat:2 }}</td></tr>
+  <tr><th>Faturamento</th><th>R$ {{ faturamento|floatformat:2 }}</th></tr>
+  <tr><td>Custo das peças</td><td>- R$ {{ custo|floatformat:2 }}</td></tr>
+  <tr><th>Lucro bruto</th><th>R$ {{ lucro|floatformat:2 }}</th></tr>
+  <tr><td>Ticket médio</td><td>R$ {{ ticket_medio|floatformat:2 }}</td></tr>
+</table>
+<h2>Ordens do período</h2>
+<table>
+  <tr><th>OS</th><th>Concluída em</th><th>Cliente</th><th>Veículo</th><th>Total</th></tr>
+  {% for o in ordens %}
+  <tr><td><a href="{% url 'admin:oficina_ordemservico_change' o.pk %}">#{{ o.pk }}</a></td>
+    <td>{{ o.concluida_em|date:"d/m/Y" }}</td><td>{{ o.cliente }}</td><td>{{ o.veiculo }}</td>
+    <td>R$ {{ o.total|floatformat:2 }}</td></tr>
+  {% empty %}<tr><td colspan="5">Nenhuma OS concluída no período.</td></tr>{% endfor %}
+</table>
+{% endblock %}
