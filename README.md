@@ -34,6 +34,14 @@ python manage.py runserver
 
 Acesse http://localhost:8000 e entre com o usuário criado.
 
+## Testes
+
+```bash
+python manage.py test
+```
+
+Os testes automatizados cobrem o cálculo do total, a baixa de estoque sem duplicidade, o alerta de estoque mínimo, a mensagem do WhatsApp, o relatório financeiro e o controle de acesso.
+
 ## Estrutura
 
 ```
@@ -42,6 +50,7 @@ oficina/
   models.py        Cliente, Veiculo, Peca, OrdemServico, ServicoOS, PecaOS
   admin.py         telas de cadastro, inlines e regras ao salvar a OS
   views.py         painel, impressão da OS e relatório financeiro
+  tests.py         testes automatizados
   templates/       painel, OS para impressão e relatório financeiro
 ```
 
