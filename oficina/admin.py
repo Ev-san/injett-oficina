@@ -54,7 +54,7 @@ class PecaInline(admin.TabularInline):
 
 @admin.register(OrdemServico)
 class OrdemServicoAdmin(admin.ModelAdmin):
-    list_display = ["id", "veiculo", "cliente", "status", "aberta_em", "valor_total", "imprimir"]
+    list_display = ["id", "veiculo", "cliente", "status", "aberta_em", "valor_total", "imprimir", "whatsapp"]
     list_filter = ["status", "veiculo__tipo"]
     search_fields = ["veiculo__placa", "veiculo__cliente__nome"]
     autocomplete_fields = ["veiculo"]
@@ -68,6 +68,10 @@ class OrdemServicoAdmin(admin.ModelAdmin):
     @admin.display(description="")
     def imprimir(self, obj):
         return format_html('<a href="{}" target="_blank">Imprimir</a>', reverse("imprimir_os", args=[obj.pk]))
+
+    @admin.display(description="")
+    def whatsapp(self, obj):
+        return format_html('<a href="{}" target="_blank">WhatsApp</a>', obj.whatsapp_url)
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)

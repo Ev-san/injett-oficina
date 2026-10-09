@@ -1,6 +1,12 @@
+import re
+from urllib.parse import quote
 from decimal import Decimal
 
 from django.db import models
+
+
+def brl(valor):
+    return f"{valor:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
 
 
 class Cliente(models.Model):
@@ -105,6 +111,36 @@ class OrdemServico(models.Model):
     @property
     def total(self):
         return self.total_servicos + self.total_pecas - self.desconto
+
+    def mensagem_whatsapp(self):
+        linhas = [
+            f"*Injett Oficina* - {self.get_status_display()} OS #{self.pk}",
+            f"Cliente: {self.cliente.nome}",
+            f"Veículo: {self.veiculo}",
+            "",
+        ]
+        if self.diagnostico:
+            linhas += [f"Diagnóstico: {self.diagnostico}", ""]
+        servicos, pecas = self.servicos.all(), self.pecas.all()
+        if servicos:
+            linhas.append("*Serviços:*")
+            linhas += [f"- {s.descricao}: R$ {brl(s.valor)}" for s in servicos]
+        if pecas:
+            linhas.append("*Peças:*")
+            linhas += [f"- {p.quantidade}x {p.peca.descricao}: R$ {brl(p.subtotal)}" for p in pecas]
+        if self.desconto:
+            linhas.append(f"Desconto: R$ {brl(self.desconto)}")
+        linhas.append(f"*TOTAL: R$ {brl(self.total)}*")
+        if self.status == "orcamento":
+            linhas += ["", "Podemos aprovar o serviço?"]
+        return "\n".join(linhas)
+
+    @property
+    def whatsapp_url(self):
+        numero = re.sub(r"\D", "", self.cliente.telefone or "")
+        if numero and len(numero) <= 11:
+            numero = "55" + numero
+        return f"https://wa.me/{numero}?text={quote(self.mensagem_whatsapp())}"
 
     def baixar_estoque(self):
         """Desconta do estoque as peças usadas (uma única vez)."""

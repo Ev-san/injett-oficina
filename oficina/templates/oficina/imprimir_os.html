@@ -8,6 +8,7 @@
  @media print{button{display:none}}
 </style></head><body>
 <button onclick="window.print()">Imprimir</button>
+<a href="{{ os.whatsapp_url }}" target="_blank"><button>Enviar por WhatsApp</button></a>
 <h1>Injett Oficina</h1>
 <h2>Ordem de Serviço #{{ os.pk }} — {{ os.get_status_display }}</h2>
 <p><b>Data:</b> {{ os.aberta_em|date:"d/m/Y H:i" }}</p>

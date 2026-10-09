@@ -15,7 +15,8 @@
     <td><a href="{% url 'admin:oficina_ordemservico_change' o.pk %}">#{{ o.pk }}</a></td>
     <td>{{ o.veiculo }}</td><td>{{ o.cliente }}</td>
     <td>{{ o.get_status_display }}</td><td>R$ {{ o.total|floatformat:2 }}</td>
-    <td><a href="{% url 'imprimir_os' o.pk %}" target="_blank">Imprimir</a></td>
+    <td><a href="{% url 'imprimir_os' o.pk %}" target="_blank">Imprimir</a> |
+      <a href="{{ o.whatsapp_url }}" target="_blank">WhatsApp</a></td>
   </tr>
   {% empty %}<tr><td colspan="6">Nenhuma OS em andamento.</td></tr>{% endfor %}
 </table>
