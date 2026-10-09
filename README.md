@@ -25,7 +25,11 @@ Projeto criado a partir da minha experiência prática como eletricista automoti
 
 ![Cadastro de cliente](docs/img/cadastro-cliente.jpg)
 
-**Cadastro de veículo** (tipo e tensão 12V/24V)
+**Veículos** (filtros por tipo e por tensão 12V/24V)
+
+![Veículos](docs/img/veiculos.jpg)
+
+**Cadastro de veículo**
 
 ![Cadastro de veículo](docs/img/cadastro-veiculo.jpg)
 
