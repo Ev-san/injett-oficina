@@ -1,0 +1,66 @@
+{% extends "oficina/painel.html" %}
+{% block content %}
+<div class="pn-topo">
+  <h1>{{ titulo }}</h1>
+  <a class="button" href="{% url 'painel' %}">‹ Voltar à Visão Geral</a>
+</div>
+{% if secao == "andamento" %}
+<div class="pn-box">
+      <h2><span class="ic-mini destaque">{% include "admin/menu_icone.html" with icone="os" %}</span>Ordens em andamento ({{ abertas|length }})</h2>
+      <table>
+        <tr><th>OS</th><th>Veículo</th><th>Cliente</th><th>Status</th><th>Total</th><th></th></tr>
+        {% for o in abertas %}
+        <tr>
+          <td><a href="{% url 'admin:oficina_ordemservico_change' o.pk %}">#{{ o.pk }}</a></td>
+          <td>{{ o.veiculo }}</td><td>{{ o.cliente }}</td>
+          <td><span class="selo {{ o.status }}">{{ o.get_status_display }}</span></td><td>R$ {{ o.total|floatformat:2 }}</td>
+          <td><a class="bt-ic cinza" href="{% url 'imprimir_os' o.pk %}" target="_blank" title="Imprimir">{% include "admin/menu_icone.html" with icone="imprimir" %}</a>
+            <a class="bt-ic verde" href="{{ o.whatsapp_url }}" target="_blank" title="Enviar no WhatsApp">{% include "admin/menu_icone.html" with icone="whatsapp" %}</a></td>
+        </tr>
+        {% empty %}<tr><td colspan="6" class="vazio">Nenhuma OS em andamento.</td></tr>{% endfor %}
+      </table>
+    </div>
+{% elif secao == "revisoes" %}
+<div class="pn-box" id="revisoes">
+      <h2><span class="ic-mini destaque">{% include "admin/menu_icone.html" with icone="sino" %}</span>Revisões a avisar ({{ revisoes|length }})</h2>
+      <table>
+        <tr><th>Veículo</th><th>Cliente</th><th>Revisão</th><th>KM atual</th><th>O que revisar</th><th></th></tr>
+        {% for o in revisoes %}
+        <tr>
+          <td><a href="{% url 'historico_veiculo' o.veiculo_id %}">{{ o.veiculo }}</a></td>
+          <td>{{ o.cliente }}</td>
+          <td>{% if o.vencida %}<b class="destaque-txt">⚠ Vencida</b><br>{% endif %}{{ o.proxima_revisao_data|date:"d/m/Y"|default:"" }}{% if o.proxima_revisao_data and o.proxima_revisao_km %} ou {% endif %}{% if o.proxima_revisao_km %}{{ o.proxima_revisao_km }} km{% endif %}</td>
+          <td>{{ o.veiculo.km|default:"-" }}</td>
+          <td>{{ o.revisao_obs|default:"-" }}</td>
+          <td><a class="bt-ic verde" href="{{ o.whatsapp_revisao_url }}" target="_blank" title="Avisar no WhatsApp">{% include "admin/menu_icone.html" with icone="whatsapp" %}</a></td>
+        </tr>
+        {% empty %}<tr><td colspan="6" class="vazio">Nenhuma revisão próxima.</td></tr>{% endfor %}
+      </table>
+    </div>
+{% elif secao == "historico" %}
+<div class="pn-box">
+  <form method="get" style="margin-bottom:14px;display:flex;gap:8px">
+    <input type="search" name="q" value="{{ busca }}" placeholder="Buscar por placa, modelo ou cliente" style="flex:1;padding:10px">
+    <button class="button" type="submit">Buscar</button>
+  </form>
+  <table>
+    <tr><th>Placa</th><th>Veículo</th><th>Cliente</th><th>Serviços</th><th>Última OS</th><th></th></tr>
+    {% for v in veiculos %}
+    <tr>
+      <td><b>{{ v.placa }}</b></td><td>{{ v.marca }} {{ v.modelo }}{% if v.ano %} ({{ v.ano }}){% endif %}</td>
+      <td>{{ v.cliente }}</td><td>{{ v.n_os }}</td><td>{{ v.ultima|date:"d/m/Y"|default:"-" }}</td>
+      <td><a class="bt-ic destaque" href="{% url 'historico_veiculo' v.pk %}" title="Ver histórico">{% include "admin/menu_icone.html" with icone="historico" %}</a></td>
+    </tr>
+    {% empty %}<tr><td colspan="6" class="vazio">Nenhum veículo encontrado.</td></tr>{% endfor %}
+  </table>
+</div>
+{% else %}
+<div class="pn-box">
+    <h2><span class="ic-mini cinza">{% include "admin/menu_icone.html" with icone="caixa" %}</span>Peças com estoque baixo</h2>
+    <ul>
+      {% for p in estoque_baixo %}<li>{{ p }} — <b class="destaque-txt">{{ p.estoque }}</b> un. <span class="vazio">(mín. {{ p.estoque_minimo }})</span></li>
+      {% empty %}<li class="vazio">Nenhuma.</li>{% endfor %}
+    </ul>
+  </div>
+{% endif %}
+{% endblock %}

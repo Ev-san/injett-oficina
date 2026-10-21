@@ -26,5 +26,6 @@
 </table>
 <p class="dir">Serviços: R$ {{ os.total_servicos|floatformat:2 }}<br>Peças: R$ {{ os.total_pecas|floatformat:2 }}<br>
 Desconto: R$ {{ os.desconto|floatformat:2 }}<br><b>TOTAL: R$ {{ os.total|floatformat:2 }}</b></p>
+{% if os.tem_revisao %}<p><b>Próxima revisão:</b> {{ os.proxima_revisao_data|date:"d/m/Y"|default:"" }}{% if os.proxima_revisao_data and os.proxima_revisao_km %} ou {% endif %}{% if os.proxima_revisao_km %}{{ os.proxima_revisao_km }} km{% endif %}{% if os.revisao_obs %} — {{ os.revisao_obs }}{% endif %}</p>{% endif %}
 <br><br><p>_______________________________<br>Assinatura do cliente</p>
 </body></html>

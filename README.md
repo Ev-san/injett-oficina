@@ -13,7 +13,9 @@ Projeto criado a partir da minha experiência prática como eletricista automoti
 - **Impressão da OS** com campo para a assinatura do cliente
 - **Envio do orçamento pelo WhatsApp** com um clique, com a mensagem formatada e os valores em R$
 - **Relatório financeiro** por período: faturamento, custo das peças, lucro bruto e ticket médio
-- **Painel inicial** com as OS em andamento e as peças com estoque baixo
+- **Histórico do veículo**: todas as passagens pela oficina, com KM, serviços, peças e total gasto. O KM do veículo é atualizado automaticamente pela OS
+- **Lembrete de revisão** por KM e/ou data: o painel mostra as revisões próximas ou vencidas, com aviso ao cliente pelo WhatsApp em um clique
+- **Painel inicial** com as OS em andamento, as revisões a avisar e as peças com estoque baixo
 
 ## Telas
 

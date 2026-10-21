@@ -1,28 +1,46 @@
 {% extends "admin/base_site.html" %}
+
 {% block content %}
-<h1>Painel da oficina</h1>
-<p>
-  <a class="button" href="{% url 'admin:oficina_ordemservico_add' %}">+ Nova OS</a>
-  <a class="button" href="{% url 'admin:oficina_cliente_add' %}">+ Novo cliente</a>
-  <a class="button" href="{% url 'admin:index' %}">Cadastros</a>
-  <a class="button" href="{% url 'financeiro' %}">Financeiro</a>
-</p>
-<h2>Ordens em andamento ({{ abertas|length }})</h2>
-<table>
-  <tr><th>OS</th><th>Veículo</th><th>Cliente</th><th>Status</th><th>Total</th><th></th></tr>
-  {% for o in abertas %}
-  <tr>
-    <td><a href="{% url 'admin:oficina_ordemservico_change' o.pk %}">#{{ o.pk }}</a></td>
-    <td>{{ o.veiculo }}</td><td>{{ o.cliente }}</td>
-    <td>{{ o.get_status_display }}</td><td>R$ {{ o.total|floatformat:2 }}</td>
-    <td><a href="{% url 'imprimir_os' o.pk %}" target="_blank">Imprimir</a> |
-      <a href="{{ o.whatsapp_url }}" target="_blank">WhatsApp</a></td>
-  </tr>
-  {% empty %}<tr><td colspan="6">Nenhuma OS em andamento.</td></tr>{% endfor %}
-</table>
-<h2>Peças com estoque baixo</h2>
-<ul>
-  {% for p in estoque_baixo %}<li>{{ p }} — {{ p.estoque }} un. (mín. {{ p.estoque_minimo }})</li>
-  {% empty %}<li>Nenhuma.</li>{% endfor %}
-</ul>
+<div class="pn-topo">
+  <h1>Visão Geral</h1>
+  <span class="pn-data">📅 {{ hoje|date:"d/m/Y" }}</span>
+</div>
+
+<p class="pn-secao">RESUMO</p>
+<div class="pn-mods">
+  <a class="pn-mod" href="{% url 'painel_lista' 'andamento' %}"><div class="ic cinza">{% include "admin/menu_icone.html" with icone="os" %}</div>
+    <div class="tx"><strong>OS em andamento</strong><span><b class="num">{{ abertas|length }}</b> abertas</span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'financeiro' %}?inicio={{ hoje|date:'Y-m-d' }}&amp;fim={{ hoje|date:'Y-m-d' }}"><div class="ic verde">{% include "admin/menu_icone.html" with icone="dinheiro" %}</div>
+    <div class="tx"><strong>Faturamento hoje</strong><span><b class="num verde-txt">R$ {{ fat_hoje|floatformat:2 }}</b></span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'financeiro' %}"><div class="ic verde">{% include "admin/menu_icone.html" with icone="calendario" %}</div>
+    <div class="tx"><strong>Faturamento do mês</strong><span><b class="num verde-txt">R$ {{ fat_mes|floatformat:2 }}</b></span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'admin:oficina_ordemservico_changelist' %}?status__exact=orcamento"><div class="ic destaque">{% include "admin/menu_icone.html" with icone="os" %}</div>
+    <div class="tx"><strong>Orçamentos pendentes</strong><span><b class="num destaque-txt">{{ orcamentos }}</b> aguardando</span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'painel_lista' 'revisoes' %}"><div class="ic destaque">{% include "admin/menu_icone.html" with icone="sino" %}</div>
+    <div class="tx"><strong>Revisões a avisar</strong><span><b class="num destaque-txt">{{ revisoes|length }}</b> veículos</span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'painel_lista' 'estoque' %}"><div class="ic cinza">{% include "admin/menu_icone.html" with icone="caixa" %}</div>
+    <div class="tx"><strong>Estoque baixo</strong><span><b class="num">{{ estoque_baixo|length }}</b> peças para repor</span></div><span class="seta">›</span></a>
+</div>
+
+<p class="pn-secao">MÓDULOS</p>
+<div class="pn-mods">
+  <a class="pn-mod destaque" href="{% url 'admin:oficina_ordemservico_add' %}"><div class="ic verde">{% include "admin/menu_icone.html" with icone="mais" %}</div>
+    <div class="tx"><strong>Nova OS</strong><span>Abrir ordem de serviço</span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'admin:oficina_ordemservico_changelist' %}"><div class="ic destaque">{% include "admin/menu_icone.html" with icone="os" %}</div>
+    <div class="tx"><strong>Ordens de serviço</strong><span>Orçamentos e serviços</span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'admin:oficina_checklist_changelist' %}"><div class="ic cinza">{% include "admin/menu_icone.html" with icone="checklist" %}</div>
+    <div class="tx"><strong>Checklist</strong><span>Entrada do veículo</span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'admin:oficina_cliente_changelist' %}"><div class="ic verde">{% include "admin/menu_icone.html" with icone="clientes" %}</div>
+    <div class="tx"><strong>Clientes</strong><span>{{ total_clientes }} cadastrados</span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'admin:oficina_veiculo_changelist' %}"><div class="ic destaque">{% include "admin/menu_icone.html" with icone="veiculo" %}</div>
+    <div class="tx"><strong>Veículos</strong><span>{{ total_veiculos }} cadastrados</span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'painel_lista' 'historico' %}"><div class="ic verde">{% include "admin/menu_icone.html" with icone="historico" %}</div>
+    <div class="tx"><strong>Histórico</strong><span>Serviços de cada veículo</span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'admin:oficina_peca_changelist' %}"><div class="ic cinza">{% include "admin/menu_icone.html" with icone="peca" %}</div>
+    <div class="tx"><strong>Peças</strong><span>Estoque e preços</span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'admin:oficina_promocao_changelist' %}"><div class="ic destaque">{% include "admin/menu_icone.html" with icone="promocao" %}</div>
+    <div class="tx"><strong>Promoções</strong><span>Ofertas via WhatsApp</span></div><span class="seta">›</span></a>
+  <a class="pn-mod" href="{% url 'financeiro' %}"><div class="ic verde">{% include "admin/menu_icone.html" with icone="financeiro" %}</div>
+    <div class="tx"><strong>Financeiro</strong><span>Faturamento e lucro</span></div><span class="seta">›</span></a>
+</div>
 {% endblock %}

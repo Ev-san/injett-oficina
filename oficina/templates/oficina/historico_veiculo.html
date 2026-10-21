@@ -1,0 +1,27 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<p><a href="{% url 'painel' %}">← Painel</a> | <a href="{% url 'admin:oficina_veiculo_change' veiculo.pk %}">Editar veículo</a></p>
+<h1>Histórico — {{ veiculo }}</h1>
+<p><b>Cliente:</b> {{ veiculo.cliente }} &nbsp; <b>Tipo:</b> {{ veiculo.get_tipo_display }} ({{ veiculo.tensao }})
+  &nbsp; <b>Ano:</b> {{ veiculo.ano|default:"-" }} &nbsp; <b>KM atual:</b> {{ veiculo.km|default:"-" }}</p>
+<p><b>Passagens pela oficina:</b> {{ ordens|length }} &nbsp; <b>Total gasto:</b> R$ {{ total_gasto|floatformat:2 }}
+  &nbsp; <a class="button" href="{% url 'admin:oficina_ordemservico_add' %}?veiculo={{ veiculo.pk }}">+ Nova OS para este veículo</a></p>
+
+{% for o in ordens %}
+<div class="module" style="margin-bottom:16px">
+  <h2><a href="{% url 'admin:oficina_ordemservico_change' o.pk %}" style="color:inherit">OS #{{ o.pk }}</a>
+    — {{ o.aberta_em|date:"d/m/Y" }} — {{ o.get_status_display }} — KM {{ o.km_entrada|default:"-" }}</h2>
+  <div style="padding:8px">
+    <p><b>Defeito:</b> {{ o.defeito_relatado|linebreaksbr }}</p>
+    {% if o.diagnostico %}<p><b>Diagnóstico:</b> {{ o.diagnostico|linebreaksbr }}</p>{% endif %}
+    <table style="width:100%">
+      <tr><th>Item</th><th>Qtd</th><th style="text-align:right">Valor</th></tr>
+      {% for s in o.servicos.all %}<tr><td>Serviço: {{ s.descricao }}</td><td>-</td><td style="text-align:right">R$ {{ s.valor|floatformat:2 }}</td></tr>{% endfor %}
+      {% for p in o.pecas.all %}<tr><td>Peça: {{ p.peca }}</td><td>{{ p.quantidade }}</td><td style="text-align:right">R$ {{ p.subtotal|floatformat:2 }}</td></tr>{% endfor %}
+      <tr><td colspan="2"><b>Total</b></td><td style="text-align:right"><b>R$ {{ o.total|floatformat:2 }}</b></td></tr>
+    </table>
+    {% if o.tem_revisao %}<p><b>Próxima revisão:</b> {{ o.proxima_revisao_data|date:"d/m/Y"|default:"" }}{% if o.proxima_revisao_data and o.proxima_revisao_km %} ou {% endif %}{% if o.proxima_revisao_km %}{{ o.proxima_revisao_km }} km{% endif %}{% if o.revisao_obs %} — {{ o.revisao_obs }}{% endif %}</p>{% endif %}
+  </div>
+</div>
+{% empty %}<p>Nenhuma OS registrada para este veículo.</p>{% endfor %}
+{% endblock %}

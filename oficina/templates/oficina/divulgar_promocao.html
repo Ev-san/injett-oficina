@@ -1,0 +1,16 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<p><a href="{% url 'admin:oficina_promocao_changelist' %}">← Promoções</a> | <a href="{% url 'admin:oficina_promocao_change' promocao.pk %}">Editar promoção</a></p>
+<h1>Divulgar: {{ promocao.titulo }}</h1>
+{% if not promocao.ativa %}<p style="color:#ba2121"><b>⚠ Esta promoção está inativa.</b></p>{% endif %}
+<p>{{ promocao.descricao|linebreaksbr }}</p>
+<p><b>Público:</b> {% if promocao.tipo_veiculo %}clientes com {{ promocao.get_tipo_veiculo_display|lower }}{% else %}todos os clientes{% endif %}
+  {% if promocao.validade %}&nbsp; <b>Válida até:</b> {{ promocao.validade|date:"d/m/Y" }}{% endif %}</p>
+<h2>Clientes ({{ clientes|length }})</h2>
+<table>
+  <tr><th>Cliente</th><th>Telefone</th><th></th></tr>
+  {% for c, url in clientes %}
+  <tr><td>{{ c.nome }}</td><td>{{ c.telefone }}</td><td><a href="{{ url }}" target="_blank">Enviar no WhatsApp</a></td></tr>
+  {% empty %}<tr><td colspan="3">Nenhum cliente com telefone para este público.</td></tr>{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "admin/base_site.html" %}
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block content %}
+<div class="pn-topo"><h1>Cadastros</h1></div>
+{% for app in app_list %}
+<p class="pn-secao">{{ app.name|upper }}</p>
+<div class="pn-mods">
+  {% for model in app.models %}
+  <div class="pn-mod{% if not model.admin_url %} sem-link{% endif %}">
+    <div class="ic {% cycle 'verde' 'destaque' 'cinza' %}">{% include "admin/menu_icone.html" with icone=model.object_name|lower %}</div>
+    <div class="tx">
+      {% if model.admin_url %}<a class="cobre" href="{{ model.admin_url }}"><strong>{{ model.name }}</strong></a>{% else %}<strong>{{ model.name }}</strong>{% endif %}
+      <span>{% if model.view_only %}Somente leitura{% else %}Ver e editar{% endif %}</span>
+    </div>
+    {% if model.add_url %}<a class="bt-ic verde mais" href="{{ model.add_url }}" title="Adicionar {{ model.name|lower }}">{% include "admin/menu_icone.html" with icone="mais" %}</a>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% empty %}<p>Você não tem permissão para ver nada aqui.</p>{% endfor %}
+{% endblock %}
+{% block sidebar %}{% endblock %}

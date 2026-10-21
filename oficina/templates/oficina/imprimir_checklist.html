@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-br"><head><meta charset="utf-8"><title>Checklist OS #{{ c.ordem.pk }}</title>
+<style>
+ body{font-family:Arial,sans-serif;margin:30px;color:#222}
+ table{width:100%;border-collapse:collapse;margin:10px 0}
+ th,td{border:1px solid #999;padding:6px;text-align:left}
+ .defeito{color:#ba2121;font-weight:bold} h1{margin-bottom:0}
+ @media print{.acoes{display:none}} .acoes{margin-bottom:10px}
+</style></head><body>
+{% if interno %}
+<div class="acoes">
+  <button onclick="window.print()">Imprimir</button>
+  <a href="{{ whatsapp_url }}" target="_blank"><button>Enviar ao cliente pelo WhatsApp</button></a>
+  <button onclick="navigator.clipboard.writeText('{{ link|escapejs }}').then(() => this.textContent = 'Link copiado!')">Copiar link</button>
+</div>
+{% endif %}
+<h1>Injett Oficina</h1>
+<h2>Checklist de entrada — OS #{{ c.ordem.pk }}</h2>
+<p><b>Data:</b> {{ c.feito_em|date:"d/m/Y H:i" }} &nbsp; <b>KM:</b> {{ c.km|default:"-" }} &nbsp; <b>Combustível:</b> {{ c.get_combustivel_display|default:"-" }}</p>
+<p><b>Cliente:</b> {{ c.ordem.cliente.nome }} &nbsp; <b>Tel:</b> {{ c.ordem.cliente.telefone }}</p>
+<p><b>Veículo:</b> {{ c.ordem.veiculo }} ({{ c.ordem.veiculo.get_tipo_display }}, {{ c.ordem.veiculo.tensao }})</p>
+<table><tr><th>Item</th><th>Situação</th></tr>
+{% for rotulo, situacao, codigo in c.itens %}<tr><td>{{ rotulo }}</td><td{% if codigo == "defeito" %} class="defeito"{% endif %}>{{ situacao }}</td></tr>{% endfor %}
+</table>
+{% if c.avarias %}<p><b>Avarias na lataria / pintura:</b> {{ c.avarias|linebreaksbr }}</p>{% endif %}
+{% if c.objetos %}<p><b>Objetos deixados no veículo:</b> {{ c.objetos|linebreaksbr }}</p>{% endif %}
+{% if c.observacoes %}<p><b>Observações:</b> {{ c.observacoes|linebreaksbr }}</p>{% endif %}
+<p>Declaro que o veículo foi entregue à oficina nas condições acima.</p>
+{% if interno %}<br><br><p>_______________________________<br>Assinatura do cliente</p>{% endif %}
+</body></html>
