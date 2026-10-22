@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.urls import reverse
 
 # (rótulo, nome da url, ícone) — os ícones estão em templates/admin/menu_icone.html
@@ -36,4 +37,8 @@ def menu(request):
     if user.is_superuser:
         itens.append({"rotulo": "Usuários", "url": reverse("admin:auth_user_changelist"), "icone": "usuarios",
                       "ativo": request.path.startswith(reverse("admin:auth_user_changelist"))})
-    return {"menu_lateral": itens, "is_nav_sidebar_enabled": True}
+    contexto = {"menu_lateral": itens, "is_nav_sidebar_enabled": True}
+    # telas próprias: mesmo cabeçalho e links de usuário do admin
+    if not request.path.startswith("/admin/"):
+        contexto = {**admin.site.each_context(request), **contexto}
+    return contexto

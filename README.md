@@ -6,44 +6,59 @@ Projeto criado a partir da minha experiência prática como eletricista automoti
 
 ## Funcionalidades
 
+- **Painel em módulos**: OS em andamento, faturamento do dia e do mês, orçamentos pendentes, revisões a avisar e peças com estoque baixo
 - **Cadastro de clientes e veículos**: tipo de veículo (carro, caminhão, ônibus, moto), placa, tensão do sistema elétrico (12V/24V) e quilometragem
 - **Ordens de serviço** com fluxo de status: orçamento → aprovada → em execução → concluída → entregue
 - **Serviços e peças por OS**, com cálculo automático do total e do desconto
+- **Checklist de entrada do veículo** (combustível, itens elétricos, avarias e objetos), com impressão e link para o cliente
 - **Controle de estoque**: a baixa é automática ao concluir a OS (sem baixa duplicada) e há um alerta de estoque mínimo
 - **Impressão da OS** com campo para a assinatura do cliente
 - **Envio do orçamento pelo WhatsApp** com um clique, com a mensagem formatada e os valores em R$
 - **Relatório financeiro** por período: faturamento, custo das peças, lucro bruto e ticket médio
 - **Histórico do veículo**: todas as passagens pela oficina, com KM, serviços, peças e total gasto. O KM do veículo é atualizado automaticamente pela OS
-- **Lembrete de revisão** por KM e/ou data: o painel mostra as revisões próximas ou vencidas, com aviso ao cliente pelo WhatsApp em um clique
-- **Painel inicial** com as OS em andamento, as revisões a avisar e as peças com estoque baixo
+- **Lembrete de revisão** por KM e/ou data, com aviso ao cliente pelo WhatsApp em um clique
+- **Promoções** filtradas por tipo de veículo, divulgadas aos clientes pelo WhatsApp
 
 ## Telas
 
+**Painel**
+
+![Painel](docs/img/painel.png)
+
 **Ordens de serviço** (filtros por status e tipo de veículo)
 
-![Ordens de serviço](docs/img/ordens-servico.jpg)
+![Ordens de serviço](docs/img/ordens-servico.png)
 
-**Cadastro de cliente com veículos**
+**Edição da OS**
 
-![Cadastro de cliente](docs/img/cadastro-cliente.jpg)
+![Ordem de serviço](docs/img/ordem-servico.png)
+
+**Histórico do veículo**
+
+![Histórico do veículo](docs/img/historico-veiculo.png)
+
+**Relatório financeiro**
+
+![Financeiro](docs/img/financeiro.png)
 
 **Veículos** (filtros por tipo e por tensão 12V/24V)
 
-![Veículos](docs/img/veiculos.jpg)
+![Veículos](docs/img/veiculos.png)
 
-**Cadastro de veículo**
+**Promoções**
 
-![Cadastro de veículo](docs/img/cadastro-veiculo.jpg)
+![Promoções](docs/img/promocoes.png)
 
-**Cadastro de peça** (preço de custo/venda e estoque mínimo)
+**OS para impressão**
 
-![Cadastro de peça](docs/img/cadastro-peca.jpg)
+![Impressão da OS](docs/img/imprimir-os.png)
 
 ## Tecnologias
 
 - Python 3.13
 - Django 6 (ORM, Admin customizado, templates)
 - SQLite
+- WhiteNoise e Gunicorn (produção)
 
 ## Como executar
 
@@ -52,11 +67,17 @@ python -m venv .venv
 .venv\Scripts\activate          # Windows  (Linux/Mac: source .venv/bin/activate)
 pip install -r requirements.txt
 python manage.py migrate
-python manage.py createsuperuser
+python manage.py popular_demo   # opcional: usuário demo/demo12345 e dados de exemplo
 python manage.py runserver
 ```
 
-Acesse http://localhost:8000 e entre com o usuário criado.
+Acesse http://localhost:8000 e entre com o usuário `demo` (senha `demo12345`) ou crie o seu com `python manage.py createsuperuser`.
+
+## Deploy
+
+O arquivo `render.yaml` publica o sistema no [Render](https://render.com) (plano gratuito): no painel do Render, escolha **New → Blueprint** e selecione este repositório.
+
+Variáveis de ambiente usadas em produção: `SECRET_KEY`, `DEBUG=False` e `ALLOWED_HOSTS`. No plano gratuito o SQLite é recriado a cada reinício, então a demonstração sempre volta aos dados de exemplo.
 
 ## Testes
 
@@ -64,18 +85,20 @@ Acesse http://localhost:8000 e entre com o usuário criado.
 python manage.py test
 ```
 
-Os testes automatizados cobrem o cálculo do total, a baixa de estoque sem duplicidade, o alerta de estoque mínimo, a mensagem do WhatsApp, o relatório financeiro e o controle de acesso.
+Os testes automatizados cobrem o cálculo do total, a baixa de estoque sem duplicidade, o alerta de estoque mínimo, as mensagens do WhatsApp, as revisões, o relatório financeiro e o controle de acesso.
 
 ## Estrutura
 
 ```
 config/            configurações do projeto Django
 oficina/
-  models.py        Cliente, Veiculo, Peca, OrdemServico, ServicoOS, PecaOS
+  models.py        Cliente, Veiculo, Peca, OrdemServico, ServicoOS, PecaOS, Checklist, Promocao
   admin.py         telas de cadastro, inlines e regras ao salvar a OS
-  views.py         painel, impressão da OS e relatório financeiro
+  views.py         painel, histórico, impressões, promoções e relatório financeiro
+  management/      comando popular_demo (dados de demonstração)
   tests.py         testes automatizados
-  templates/       painel, OS para impressão e relatório financeiro
+  templates/       painel, admin personalizado e telas de impressão
+render.yaml        deploy no Render
 ```
 
 ## Autor

@@ -1,0 +1,18 @@
+# Deploy no Render (plano gratuito). O SQLite é recriado a cada reinício,
+# por isso o start já migra e popula os dados de demonstração.
+services:
+  - type: web
+    name: injett-oficina
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: python manage.py migrate --noinput && python manage.py popular_demo && gunicorn config.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: injett-oficina.onrender.com
